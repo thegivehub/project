@@ -1,12 +1,17 @@
 <?php
-// index.php - This simply serves the HTML interface
-
-// Optional: You can add any server-side logic here if needed
-
-// Get the count of tasks for each tranche
+// index.php - Updated with assignee functionality
 require_once("config.php");
 $trancheStats = [];
 
+// Load developers data
+$developersJson = file_get_contents('developers.json');
+$developers = json_decode($developersJson, true);
+$developersMap = [];
+foreach ($developers as $dev) {
+    $developersMap[$dev['id']] = $dev;
+}
+
+// Get tranche stats
 for ($i = 1; $i <= 3; $i++) {
     $sql = "SELECT 
                 COUNT(*) as total,
@@ -40,6 +45,27 @@ if ($result && $row = $result->fetch_assoc()) {
     ];
 }
 
+// Get assignee stats
+$assigneeStats = [];
+$sql = "SELECT 
+        assignee_id, 
+        COUNT(*) as total_tasks, 
+        SUM(completed) as completed_tasks
+    FROM tasks 
+    WHERE assignee_id IS NOT NULL 
+    GROUP BY assignee_id";
+
+$result = $conn->query($sql);
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $assigneeId = $row['assignee_id'];
+        $assigneeStats[$assigneeId] = [
+            'total' => $row['total_tasks'],
+            'completed' => $row['completed_tasks'],
+            'percentage' => $row['total_tasks'] > 0 ? round(($row['completed_tasks'] / $row['total_tasks']) * 100) : 0
+        ];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -253,6 +279,40 @@ if ($result && $row = $result->fetch_assoc()) {
             font-size: 0.875rem;
             color: var(--gray-600);
         }
+        
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            position: relative;
+        }
+        
+        .assignee-selector {
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        
+        .assignee-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .assignee-badge img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 0.25rem;
+        }
 
         .summary-card {
             background: white;
@@ -350,6 +410,58 @@ if ($result && $row = $result->fetch_assoc()) {
             background: var(--success-light);
             color: var(--success);
         }
+        
+        .assignee-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .assignee-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .assignee-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .assignee-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-right: 1rem;
+        }
+        
+        .assignee-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .assignee-info h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .assignee-info p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
 
         @media (max-width: 768px) {
             .container {
@@ -370,6 +482,20 @@ if ($result && $row = $result->fetch_assoc()) {
                 overflow-x: auto;
                 white-space: nowrap;
                 -webkit-overflow-scrolling: touch;
+            }
+            
+            .task-item {
+                flex-wrap: wrap;
+            }
+            
+            .task-assignee {
+                margin-left: 0;
+                margin-top: 0.5rem;
+                width: 100%;
+            }
+            
+            .assignee-selector {
+                width: 100%;
             }
         }
     </style>
@@ -400,6 +526,37 @@ if ($result && $row = $result->fetch_assoc()) {
                         <div class="summary-label">Completion Rate</div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="assignee-stats" id="assigneeStats">
+                <?php foreach ($developers as $developer): ?>
+                    <?php 
+                    $devId = $developer['id'];
+                    $devStats = isset($assigneeStats[$devId]) ? $assigneeStats[$devId] : ['total' => 0, 'completed' => 0, 'percentage' => 0];
+                    ?>
+                    <div class="assignee-card">
+                        <div class="assignee-header">
+                            <div class="assignee-avatar">
+                                <?php if (!empty($developer['avatar'])): ?>
+                                    <img src="img/profilepics/<?php echo htmlspecialchars($developer['avatar']); ?>" alt="<?php echo htmlspecialchars($developer['name']); ?>">
+                                <?php else: ?>
+                                    <?php echo substr($developer['name'], 0, 2); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="assignee-info">
+                                <h3><?php echo htmlspecialchars($developer['name']); ?></h3>
+                                <p><?php echo htmlspecialchars($developer['role']); ?></p>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <?php echo $devStats['percentage']; ?>%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <div><?php echo $devStats['completed']; ?>/<?php echo $devStats['total']; ?> tasks</div>
+                            <div><?php echo $devStats['percentage']; ?>%</div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
             
             <div class="tabs">
@@ -443,6 +600,7 @@ if ($result && $row = $result->fetch_assoc()) {
             const contentContainer = document.getElementById('contentContainer');
             const loadingDisplay = document.getElementById('loadingDisplay');
             const errorDisplay = document.getElementById('errorDisplay');
+            let developers = [];
             
             // Tab switching
             const tabs = document.querySelectorAll('.tab');
@@ -470,13 +628,31 @@ if ($result && $row = $result->fetch_assoc()) {
                 });
             });
             
-            // Fetch tasks from server
-            fetchTasks();
+            // Fetch developers then tasks
+            fetchDevelopers()
+                .then(() => fetchTasks())
+                .catch(error => {
+                    console.error('Error initializing app:', error);
+                    showError('Failed to initialize application. Please try again.');
+                });
+            
+            function fetchDevelopers() {
+                return fetch('get_developers.php')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        developers = data;
+                    });
+            }
             
             function fetchTasks() {
                 showLoading(true);
                 
-                fetch('handle_tasks.php')
+                return fetch('handle_tasks.php')
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -497,6 +673,12 @@ if ($result && $row = $result->fetch_assoc()) {
                         showError('Failed to load tasks. Please try again later.');
                         showLoading(false);
                     });
+            }
+            
+            function getAssigneeName(assigneeId) {
+                if (!assigneeId) return 'Unassigned';
+                const developer = developers.find(d => d.id == assigneeId);
+                return developer ? developer.name : 'Unknown';
             }
             
             function processTasks(taskData) {
@@ -639,11 +821,26 @@ if ($result && $row = $result->fetch_assoc()) {
                             sortedTasks.forEach(task => {
                                 const taskItem = document.createElement('div');
                                 taskItem.className = 'task-item';
+                                
+                                // Create assignee dropdown options
+                                let assigneeOptions = '';
+                                developers.forEach(dev => {
+                                    const selected = task.assignee_id == dev.id ? 'selected' : '';
+                                    assigneeOptions += `<option value="${dev.id}" ${selected}>${dev.name}</option>`;
+                                });
+                                
+                                // Create task item HTML
                                 taskItem.innerHTML = `
                                     <input type="checkbox" class="task-checkbox" data-id="${task.id}" ${task.completed == 1 ? 'checked' : ''}>
                                     <div class="task-info">
                                         <div class="task-name">${task.task_name}</div>
                                         <div class="task-subcategory">${subcategory}</div>
+                                    </div>
+                                    <div class="task-assignee">
+                                        <select class="assignee-selector" data-id="${task.id}">
+                                            <option value="">Unassigned</option>
+                                            ${assigneeOptions}
+                                        </select>
                                     </div>
                                 `;
                                 taskList.appendChild(taskItem);
@@ -652,6 +849,12 @@ if ($result && $row = $result->fetch_assoc()) {
                                 const checkbox = taskItem.querySelector('.task-checkbox');
                                 checkbox.addEventListener('change', function() {
                                     updateTaskStatus(task.id, this.checked);
+                                });
+                                
+                                // Add event listener for assignee dropdown
+                                const assigneeSelector = taskItem.querySelector('.assignee-selector');
+                                assigneeSelector.addEventListener('change', function() {
+                                    updateTaskAssignee(task.id, this.value);
                                 });
                             });
                         });
@@ -713,7 +916,7 @@ if ($result && $row = $result->fetch_assoc()) {
                     }
                 })
                 .catch(error => {
-                    console.error('Error updating task status:', error);
+                   console.error('Error updating task status:', error);
                     
                     // Revert checkbox state on error
                     const checkbox = document.querySelector(`.task-checkbox[data-id="${taskId}"]`);
@@ -725,25 +928,48 @@ if ($result && $row = $result->fetch_assoc()) {
                 });
             }
             
-            function updateCategoryProgress() {
-                document.querySelectorAll('.category-section').forEach(section => {
-                    const categoryHeader = section.querySelector('.category-header');
-                    const categoryName = categoryHeader.querySelector('div:first-child').textContent;
-                    const progressElement = categoryHeader.querySelector('.category-progress div:last-child');
-                    const progressBar = categoryHeader.querySelector('.progress-fill');
-                    
-                    // Find the relevant category in the current tranche
-                    const activeTrancheId = document.querySelector('.tab.active').getAttribute('data-tranche');
-                    const trancheTasks = tasks.filter(task => task.tranche == activeTrancheId && task.category == categoryName);
-                    
-                    if (trancheTasks.length > 0) {
-                        const total = trancheTasks.length;
-                        const completed = trancheTasks.filter(t => t.completed == 1).length;
-                        const percent = Math.round((completed / total) * 100);
+            function updateTaskAssignee(taskId, assigneeId) {
+                const formData = new FormData();
+                formData.append('action', 'update_assignee');
+                formData.append('task_id', taskId);
+                formData.append('assignee_id', assigneeId);
+                
+                fetch('handle_tasks.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update local data
+                        const task = tasks.find(t => t.id == taskId);
+                        if (task) {
+                            task.assignee_id = assigneeId;
+                            // Reload the page to refresh server-side calculated stats
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 500);
+                        }
+                    } else {
+                        // Revert select state on error
+                        const assigneeSelector = document.querySelector(`.assignee-selector[data-id="${taskId}"]`);
+                        if (assigneeSelector) {
+                            assigneeSelector.value = task.assignee_id || '';
+                        }
                         
-                        progressElement.textContent = `${completed}/${total} (${percent}%)`;
-                        progressBar.style.width = `${percent}%`;
+                        showError('Failed to update task assignee. Please try again.');
                     }
+                })
+                .catch(error => {
+                    console.error('Error updating task assignee:', error);
+                    
+                    // Revert select state on error
+                    const assigneeSelector = document.querySelector(`.assignee-selector[data-id="${taskId}"]`);
+                    if (assigneeSelector) {
+                        assigneeSelector.value = task.assignee_id || '';
+                    }
+                    
+                    showError('Failed to update task assignee. Please try again.');
                 });
             }
             
@@ -791,6 +1017,28 @@ if ($result && $row = $result->fetch_assoc()) {
                 });
             }
             
+            function updateCategoryProgress() {
+                document.querySelectorAll('.category-section').forEach(section => {
+                    const categoryHeader = section.querySelector('.category-header');
+                    const categoryName = categoryHeader.querySelector('div:first-child').textContent;
+                    const progressElement = categoryHeader.querySelector('.category-progress div:last-child');
+                    const progressBar = categoryHeader.querySelector('.progress-fill');
+                    
+                    // Find the relevant category in the current tranche
+                    const activeTrancheId = document.querySelector('.tab.active').getAttribute('data-tranche');
+                    const trancheTasks = tasks.filter(task => task.tranche == activeTrancheId && task.category == categoryName);
+                    
+                    if (trancheTasks.length > 0) {
+                        const total = trancheTasks.length;
+                        const completed = trancheTasks.filter(t => t.completed == 1).length;
+                        const percent = Math.round((completed / total) * 100);
+                        
+                        progressElement.textContent = `${completed}/${total} (${percent}%)`;
+                        progressBar.style.width = `${percent}%`;
+                    }
+                });
+            }
+            
             function showLoading(show) {
                 if (show) {
                     loadingDisplay.classList.remove('hidden');
@@ -812,4 +1060,5 @@ if ($result && $row = $result->fetch_assoc()) {
         });
     </script>
 </body>
-</html>
+</html> 
+                    
