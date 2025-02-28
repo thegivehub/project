@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Chris Robison",
+    "email": "chris@thegivehub.com",
+    "role": "Backend Engineer",
+    "avatar": "cr.png"
+  },
+  {
+    "id": 2,
+    "name": "Kevin Ready",
+    "email": "kevin@thegivehub.com",
+    "role": "Frontend Engineer",
+    "avatar": "kr.png"
+  }
+]
