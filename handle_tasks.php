@@ -27,7 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => true]);
                 break;
                 
-            case 'get_progress':
+            case 'update_notes':
+                $task_id = $_POST['task_id'];
+                $notes = $_POST['notes'];
+                
+                $stmt = $conn->prepare("UPDATE tasks SET notes = ? WHERE id = ?");
+                $stmt->bind_param("si", $notes, $task_id);
+                $result = $stmt->execute();
+                
+                echo json_encode(['success' => $result]);
+                break;
+                
+             case 'get_progress':
                 $sql = "SELECT category, COUNT(*) as total, SUM(completed) as completed FROM tasks GROUP BY category";
                 $result = $conn->query($sql);
                 
@@ -66,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // GET request - return all tasks
-$sql = "SELECT id, category, subcategory, task_name, completed, assignee_id, tranche FROM tasks ORDER BY category, subcategory, id";
+$sql = "SELECT id, category, subcategory, task_name, completed, assignee_id, tranche, notes FROM tasks ORDER BY category, subcategory, id";
 $result = $conn->query($sql);
 
 $tasks = [];

@@ -68,7 +68,7 @@ if ($result) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,6 +76,7 @@ if ($result) {
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Light mode variables */
             --primary: #2563eb;
             --primary-light: #dbeafe;
             --success: #10b981;
@@ -84,12 +85,42 @@ if ($result) {
             --warning-light: #fef3c7;
             --danger: #ef4444;
             --danger-light: #fee2e2;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
             --gray-300: #d1d5db;
             --gray-600: #4b5563;
             --gray-700: #374151;
             --gray-800: #1f2937;
+            --border-color: #e5e7eb;
+        }
+
+        .dark {
+            /* Dark mode variables */
+            --primary: #3b82f6;
+            --primary-light: #1e3a8a;
+            --success: #10b981;
+            --success-light: #064e3b;
+            --warning: #f59e0b;
+            --warning-light: #78350f;
+            --danger: #ef4444;
+            --danger-light: #7f1d1d;
+            --background: #111827;
+            --card-bg: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #e5e7eb;
+            --text-muted: #9ca3af;
+            --gray-100: #374151;
+            --gray-200: #4b5563;
+            --gray-300: #6b7280;
+            --gray-600: #d1d5db;
+            --gray-700: #e5e7eb;
+            --gray-800: #f3f4f6;
+            --border-color: #374151;
         }
 
         * {
@@ -100,9 +131,10 @@ if ($result) {
 
         body {
             font-family: 'Lexend', sans-serif;
-            background-color: #f9fafb;
-            color: var(--gray-800);
+            background-color: var(--background);
+            color: var(--text-primary);
             line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -111,17 +143,46 @@ if ($result) {
             padding: 2rem;
         }
 
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
         h1 {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 2rem;
-            color: var(--gray-800);
+            color: var(--text-primary);
             text-align: center;
         }
 
         .tabs {
             display: flex;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 2rem;
         }
 
@@ -131,6 +192,7 @@ if ($result) {
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
+            color: var(--text-secondary);
         }
 
         .tab.active {
@@ -154,17 +216,18 @@ if ($result) {
         }
 
         .progress-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 1.5rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .progress-card h3 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--gray-700);
+            color: var(--text-primary);
         }
 
         .progress-bar {
@@ -186,25 +249,28 @@ if ($result) {
             display: flex;
             justify-content: space-between;
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
 
         .category-section {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
             overflow: hidden;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .category-header {
             padding: 1rem 1.5rem;
             background: var(--gray-100);
             font-weight: 600;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease;
         }
 
         .category-progress {
@@ -227,7 +293,7 @@ if ($result) {
 
         .task-item {
             padding: 0.75rem 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: flex-start;
             gap: 1rem;
@@ -248,6 +314,7 @@ if ($result) {
             transition: all 0.2s;
             flex-shrink: 0;
             margin-top: 0.25rem;
+            background-color: var(--card-bg);
         }
 
         .task-checkbox:checked {
@@ -273,11 +340,12 @@ if ($result) {
         .task-name {
             font-weight: 500;
             margin-bottom: 0.25rem;
+            color: var(--text-primary);
         }
 
         .task-subcategory {
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
         
         .task-assignee {
@@ -289,11 +357,13 @@ if ($result) {
         
         .assignee-selector {
             padding: 0.35rem 0.5rem;
-            border: 1px solid var(--gray-300);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            background-color: white;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
             font-size: 0.875rem;
             cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
         }
         
         .assignee-badge {
@@ -315,19 +385,20 @@ if ($result) {
         }
 
         .summary-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             text-align: center;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .summary-card h2 {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--gray-700);
+            color: var(--text-primary);
         }
 
         .summary-stats {
@@ -340,6 +411,7 @@ if ($result) {
             padding: 1rem;
             background: var(--gray-100);
             border-radius: 8px;
+            transition: background-color 0.3s ease;
         }
 
         .summary-value {
@@ -351,7 +423,7 @@ if ($result) {
 
         .summary-label {
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
 
         .loading {
@@ -368,6 +440,11 @@ if ($result) {
             border-radius: 50%;
             border-top-color: var(--primary);
             animation: spin 1s ease-in-out infinite;
+        }
+
+        .dark .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
         }
 
         @keyframes spin {
@@ -419,12 +496,13 @@ if ($result) {
         }
         
         .assignee-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
         
         .assignee-header {
@@ -442,7 +520,7 @@ if ($result) {
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: var(--gray-700);
+            color: var(--text-primary);
             margin-right: 1rem;
         }
         
@@ -456,13 +534,71 @@ if ($result) {
         .assignee-info h3 {
             font-size: 1.125rem;
             margin-bottom: 0.25rem;
+            color: var(--text-primary);
         }
         
         .assignee-info p {
             font-size: 0.875rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
+        }
+        
+        /* Notes functionality styles */
+        .task-notes-container {
+            margin-top: 0.5rem;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
         }
 
+        .task-notes {
+            flex: 1;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            min-height: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .task-notes:empty::before {
+            content: "Add notes...";
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .task-notes[contenteditable="true"] {
+            background-color: var(--gray-100);
+            border: 1px solid var(--border-color);
+            outline: none;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .task-notes-edit {
+            opacity: 0;
+            transition: opacity 0.2s;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .task-item:hover .task-notes-edit {
+            opacity: 1;
+        }
+
+        .task-notes-edit:hover {
+            background-color: var(--gray-200);
+            color: var(--primary);
+        }
+
+        .task-notes-edit.editing {
+            opacity: 1;
+            color: var(--primary);
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -497,10 +633,188 @@ if ($result) {
             .assignee-selector {
                 width: 100%;
             }
+
+            .theme-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
         }
+/* Filter Controls Styles - Add to your CSS section */
+.filter-controls {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.filter-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Toggle Switch */
+.filter-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.filter-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray-300);
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Assignee Filters */
+.assignee-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.assignee-filter-btn {
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.assignee-filter-btn:hover {
+    background: var(--gray-200);
+}
+
+.assignee-filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Task visibility based on filters */
+.task-item.completed-task.hide-completed {
+    display: none;
+}
+
+.task-item.filtered-by-assignee {
+    display: none;
+}
+
+/* Empty category message styling */
+.empty-category-message {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Add a light pulse animation to newly filtered items */
+@keyframes filterPulse {
+    0% { background-color: var(--primary-light); }
+    100% { background-color: transparent; }
+}
+
+.task-item.filter-changed {
+    animation: filterPulse 1s ease-out;
+}
+
+/* Add these to your existing media queries */
+@media (max-width: 768px) {
+    .filter-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .filter-section {
+        width: 100%;
+    }
+
+    .assignee-filters {
+        width: 100%;
+    }
+}
     </style>
 </head>
 <body>
+    <div class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <!-- Sun icon for light mode -->
+        <svg xmlns="http://www.w3.org/2000/svg" id="lightIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <!-- Moon icon for dark mode -->
+        <svg xmlns="http://www.w3.org/2000/svg" id="darkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </div>
+
     <div class="container">
         <h1>GiveHub Deliverable Tracker</h1>
         
@@ -527,7 +841,23 @@ if ($result) {
                     </div>
                 </div>
             </div>
-            
+            <div class="filter-controls">
+                <div class="filter-section">
+                    <label class="filter-switch">
+                        <input type="checkbox" id="hideCompleted">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="filter-label">Hide Completed Tasks</span>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-label">Filter by Assignee:</div>
+                    <div class="assignee-filters" id="assigneeFilters">
+                        <button class="assignee-filter-btn active" data-assignee="all">All</button>
+                        <!-- Developer filter buttons will be added dynamically -->
+                    </div>
+                </div>
+            </div>
             <div class="assignee-stats" id="assigneeStats">
                 <?php foreach ($developers as $developer): ?>
                     <?php 
@@ -592,7 +922,185 @@ if ($result) {
         </div>
     </div>
 
-    <script>
+<script>
+    // Theme toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const lightIcon = document.getElementById('lightIcon');
+        const darkIcon = document.getElementById('darkIcon');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved theme preference or respect OS preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            enableDarkMode();
+        } else {
+            enableLightMode();
+        }
+        
+        // Toggle theme when button is clicked
+        themeToggle.addEventListener('click', function() {
+            if (htmlElement.classList.contains('dark')) {
+                enableLightMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+        
+        function enableDarkMode() {
+            htmlElement.classList.add('dark');
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'block';
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        function enableLightMode() {
+            htmlElement.classList.remove('dark');
+            lightIcon.style.display = 'block';
+            darkIcon.style.display = 'none';
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    function setupNotesEditing() {
+        // Find all edit icons
+        const editIcons = document.querySelectorAll('.task-notes-edit');
+
+        editIcons.forEach(editIcon => {
+            editIcon.addEventListener('click', function(evt) {
+                const notesContainer = this.closest('.task-notes-container');
+                const notesElement = notesContainer.querySelector('.task-notes');
+                evt.preventDefault();
+                evt.stopPropagation();
+                if (notesElement.getAttribute('contenteditable') === 'true') {
+                    // Already in edit mode, so save
+                    saveNotes(notesElement);
+                } else {
+                    // Enter edit mode
+                    startEditing(notesElement, this);
+                }
+                return false;
+            });
+        });
+    }
+
+    function startEditing(notesElement, editIcon) {
+        // Store original content for cancel
+        notesElement.dataset.originalContent = notesElement.innerHTML;
+
+        // Make editable and focus
+        notesElement.setAttribute('contenteditable', 'true');
+        notesElement.focus();
+
+        // Select all text if not empty
+        if (notesElement.textContent.trim() !== '') {
+            selectElementContents(notesElement);
+        }
+
+        // Change icon to save icon
+        editIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>';
+        editIcon.classList.add('editing');
+
+        // Handle key events (Enter to save, Escape to cancel)
+        notesElement.addEventListener('keydown', handleNotesKeydown);
+
+        // Handle click outside to save
+        document.addEventListener('click', handleClickOutside);
+    }
+
+    function saveNotes(notesElement) {
+        // Remove editing state
+        notesElement.removeAttribute('contenteditable');
+
+        const taskId = notesElement.closest('.task-item').querySelector('.task-checkbox').dataset.id;
+        const notesContent = notesElement.innerHTML.trim();
+
+        // Update notes in database
+        updateTaskNotes(taskId, notesContent);
+
+        // Reset edit icon
+        const editIcon = notesElement.parentElement.querySelector('.task-notes-edit');
+        editIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+        editIcon.classList.remove('editing');
+
+        // Remove event listeners
+        notesElement.removeEventListener('keydown', handleNotesKeydown);
+        document.removeEventListener('click', handleClickOutside);
+    }
+
+    function cancelEditing(notesElement) {
+        // Restore original content
+        notesElement.innerHTML = notesElement.dataset.originalContent;
+        notesElement.removeAttribute('contenteditable');
+
+        // Reset edit icon
+        const editIcon = notesElement.parentElement.querySelector('.task-notes-edit');
+        editIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+        editIcon.classList.remove('editing');
+
+        // Remove event listeners
+        notesElement.removeEventListener('keydown', handleNotesKeydown);
+        document.removeEventListener('click', handleClickOutside);
+    }
+
+    function handleNotesKeydown(event) {
+        const notesElement = event.target;
+
+        // Enter key saves (unless Shift is held)
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            saveNotes(notesElement);
+        }
+
+        // Escape key cancels
+        if (event.key === 'Escape') {
+            cancelEditing(notesElement);
+        }
+    }
+
+    function handleClickOutside(event) {
+        const activeNotesElements = document.querySelectorAll('.task-notes[contenteditable="true"]');
+
+        activeNotesElements.forEach(notesElement => {
+            // Check if the click was inside this notes element
+            if (!notesElement.contains(event.target) &&
+                !notesElement.parentElement.querySelector('.task-notes-edit').contains(event.target)) {
+                saveNotes(notesElement);
+            }
+        });
+    }
+
+    function selectElementContents(element) {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    function updateTaskNotes(taskId, notes) {
+        const formData = new FormData();
+        formData.append('action', 'update_notes');
+        formData.append('task_id', taskId);
+        formData.append('notes', notes);
+
+        fetch('handle_tasks.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                showError('Failed to update task notes. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating task notes:', error);
+            showError('Failed to update task notes. Please try again.');
+        });
+    }
         document.addEventListener('DOMContentLoaded', function() {
             const tasks = [];
             const categories = {};
@@ -600,8 +1108,10 @@ if ($result) {
             const contentContainer = document.getElementById('contentContainer');
             const loadingDisplay = document.getElementById('loadingDisplay');
             const errorDisplay = document.getElementById('errorDisplay');
-            let developers = [];
             
+            const developers = <?php echo json_encode($developers); ?>;
+            window.developers = developers;
+
             // Tab switching
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -628,27 +1138,12 @@ if ($result) {
                 });
             });
             
-            // Fetch developers then tasks
-            fetchDevelopers()
-                .then(() => fetchTasks())
+            fetchTasks()
                 .catch(error => {
                     console.error('Error initializing app:', error);
                     showError('Failed to initialize application. Please try again.');
                 });
-            
-            function fetchDevelopers() {
-                return fetch('get_developers.php')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        developers = data;
-                    });
-            }
-            
+
             function fetchTasks() {
                 showLoading(true);
                 
@@ -724,6 +1219,7 @@ if ($result) {
                 // Render the UI
                 renderTasks();
                 updateProgressCards('1'); // Start with Tranche 1
+                initializeFilters();
             }
             
             function renderTasks() {
@@ -820,7 +1316,7 @@ if ($result) {
                             
                             sortedTasks.forEach(task => {
                                 const taskItem = document.createElement('div');
-                                taskItem.className = 'task-item';
+                                taskItem.className = `task-item ${task.completed == 1 ? 'completed-task' : ''}`;
                                 
                                 // Create assignee dropdown options
                                 let assigneeOptions = '';
@@ -835,6 +1331,12 @@ if ($result) {
                                     <div class="task-info">
                                         <div class="task-name">${task.task_name}</div>
                                         <div class="task-subcategory">${subcategory}</div>
+                                        <div class="task-notes-container">
+                                            <div class="task-notes" data-task-id="${task.id}">${task.notes || ''}</div>
+                                            <div class="task-notes-edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="task-assignee">
                                         <select class="assignee-selector" data-id="${task.id}">
@@ -843,19 +1345,35 @@ if ($result) {
                                         </select>
                                     </div>
                                 `;
+                               
                                 taskList.appendChild(taskItem);
                                 
                                 // Add event listener for checkbox
                                 const checkbox = taskItem.querySelector('.task-checkbox');
                                 checkbox.addEventListener('change', function() {
                                     updateTaskStatus(task.id, this.checked);
-                                });
+                                    
+                                    // Update completed class on parent
+                                    if (this.checked) {
+                                        taskItem.classList.add('completed-task');
+                                    } else {
+                                        taskItem.classList.remove('completed-task');
+                                    }
+                                    
+                                    // Reapply filters
+                                    applyFilters();
+                               });
                                 
                                 // Add event listener for assignee dropdown
                                 const assigneeSelector = taskItem.querySelector('.assignee-selector');
                                 assigneeSelector.addEventListener('change', function() {
                                     updateTaskAssignee(task.id, this.value);
-                                });
+                                    
+                                    // Reapply filters to update visibility if needed
+                                    setTimeout(() => {
+                                        applyFilters();
+                                    }, 100);
+                               });
                             });
                         });
                         
@@ -863,6 +1381,7 @@ if ($result) {
                         trancheElement.appendChild(categorySection);
                     });
                 });
+                setupNotesEditing();            
             }
             
             function updateTaskStatus(taskId, completed) {
@@ -901,9 +1420,7 @@ if ($result) {
                             
                             // Reload the page to refresh server-side calculated stats
                             // You could implement a more elegant solution with AJAX
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 500);
+                            // setTimeout(() => { window.location.reload(); }, 500);
                         }
                     } else {
                         // Revert checkbox state on error
@@ -946,9 +1463,7 @@ if ($result) {
                         if (task) {
                             task.assignee_id = assigneeId;
                             // Reload the page to refresh server-side calculated stats
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 500);
+                            // setTimeout(() => { window.location.reload(); }, 500);
                         }
                     } else {
                         // Revert select state on error
@@ -1058,7 +1573,140 @@ if ($result) {
                 }, 5000);
             }
         });
-    </script>
+
+// Task filtering functions
+function initializeFilters() {
+    // Create assignee filter buttons
+    createAssigneeFilters();
+    
+    // Setup hide completed toggle
+    const hideCompletedToggle = document.getElementById('hideCompleted');
+    if (hideCompletedToggle) {
+        hideCompletedToggle.addEventListener('change', function() {
+            applyFilters();
+        });
+    }
+    
+    // Apply initial filters
+    applyFilters();
+}
+
+function createAssigneeFilters() {
+    const assigneeFiltersContainer = document.getElementById('assigneeFilters');
+    if (!assigneeFiltersContainer) return;
+    
+    // Get developers from existing data
+    const developers = window.developers || [];
+    
+    // Add a button for each developer
+    developers.forEach(dev => {
+        const button = document.createElement('button');
+        button.className = 'assignee-filter-btn';
+        button.setAttribute('data-assignee', dev.id);
+        button.textContent = dev.name;
+        
+        button.addEventListener('click', function() {
+            // Toggle active state
+            document.querySelectorAll('.assignee-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Apply filters
+            applyFilters();
+        });
+        
+        assigneeFiltersContainer.appendChild(button);
+    });
+    
+    // Add an "Unassigned" button
+    const unassignedButton = document.createElement('button');
+    unassignedButton.className = 'assignee-filter-btn';
+    unassignedButton.setAttribute('data-assignee', 'unassigned');
+    unassignedButton.textContent = 'Unassigned';
+    
+    unassignedButton.addEventListener('click', function() {
+        // Toggle active state
+        document.querySelectorAll('.assignee-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Apply filters
+        applyFilters();
+    });
+    
+    assigneeFiltersContainer.appendChild(unassignedButton);
+}
+
+function applyFilters() {
+    // Get current filter states
+    const hideCompleted = document.getElementById('hideCompleted').checked;
+    const activeAssigneeButton = document.querySelector('.assignee-filter-btn.active');
+    const selectedAssignee = activeAssigneeButton ? activeAssigneeButton.getAttribute('data-assignee') : 'all';
+    
+    // Apply to all task items
+    document.querySelectorAll('.task-item').forEach(taskItem => {
+        // Reset classes first
+        taskItem.classList.remove('hide-completed', 'filtered-by-assignee');
+        
+        // Check if task is completed
+        const isCompleted = taskItem.querySelector('.task-checkbox').checked;
+        
+        // Add completed class if needed
+        if (isCompleted) {
+            taskItem.classList.add('completed-task');
+            
+            // Hide if the filter is active
+            if (hideCompleted) {
+                taskItem.classList.add('hide-completed');
+            }
+        } else {
+            taskItem.classList.remove('completed-task');
+        }
+        
+        // Apply assignee filter
+        if (selectedAssignee !== 'all') {
+            const assigneeSelector = taskItem.querySelector('.assignee-selector');
+            const taskAssigneeId = assigneeSelector.value;
+            
+            if (selectedAssignee === 'unassigned' && taskAssigneeId !== '') {
+                taskItem.classList.add('filtered-by-assignee');
+            } else if (selectedAssignee !== 'unassigned' && taskAssigneeId !== selectedAssignee) {
+                taskItem.classList.add('filtered-by-assignee');
+            }
+        }
+    });
+    
+    // Update empty category display
+    updateEmptyCategoryDisplay();
+}
+
+function updateEmptyCategoryDisplay() {
+    // Check each category section for visible tasks
+    document.querySelectorAll('.category-section').forEach(section => {
+        const hasVisibleTasks = Array.from(section.querySelectorAll('.task-item')).some(task => {
+            return !task.classList.contains('hide-completed') && !task.classList.contains('filtered-by-assignee');
+        });
+        
+        if (!hasVisibleTasks) {
+            if (!section.querySelector('.empty-category-message')) {
+                const taskList = section.querySelector('.task-list');
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-category-message';
+                emptyMessage.textContent = 'No tasks match the current filters';
+                taskList.appendChild(emptyMessage);
+            }
+        } else {
+            const emptyMessage = section.querySelector('.empty-category-message');
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+        }
+    });
+}
+
+</script>
 </body>
 </html> 
                     
