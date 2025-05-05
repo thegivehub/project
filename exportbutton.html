@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Button Test</title>
+</head>
+<body>
+    <button onclick="exportTranche('markdown')">Export to Markdown</button>
+    <button onclick="exportTranche('print')">Export to Print View</button>
+
+    <script>
+        function exportTranche(type) {
+            const trancheId = '1';
+            window.open(`export.php?type=${type}&tranche=${trancheId}`, '_blank');
+        }
+    </script>
+</body>
+</html>

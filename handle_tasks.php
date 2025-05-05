@@ -1,6 +1,8 @@
 <?php
 // handle_tasks.php
 require_once("config.php");
+require_once("lib/Parsedown.php");
+$Parsedown = new Parsedown();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
@@ -31,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $task_id = $_POST['task_id'];
                 $notes = $_POST['notes'];
                 
+                // Store the raw markdown
                 $stmt = $conn->prepare("UPDATE tasks SET notes = ? WHERE id = ?");
                 $stmt->bind_param("si", $notes, $task_id);
                 $result = $stmt->execute();
@@ -83,6 +86,12 @@ $result = $conn->query($sql);
 $tasks = [];
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
+        // Store the original markdown for editing
+        if (!empty($row['notes'])) {
+            $row['notes_markdown'] = $row['notes'];
+            // Convert Markdown to HTML for display
+            $row['notes'] = $Parsedown->text($row['notes']);
+        }
         $tasks[] = $row;
     }
 }

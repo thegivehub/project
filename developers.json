@@ -12,5 +12,21 @@
     "email": "kevin@thegivehub.com",
     "role": "Frontend Engineer",
     "avatar": "kr.png"
+  },
+  {
+    "id": 3,
+    "name": "Giselle",
+    "email": "giselle@thegivehub.com",
+    "role": "Software Engineer",
+    "avatar": "anon-female.png"
+  },
+  {
+    "id": 4,
+    "name": "Leo",
+    "email": "leo@thegivehub.com",
+    "role": "Software Engineer",
+    "avatar": "anon-male.png"
   }
+
+
 ]
