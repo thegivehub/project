@@ -2341,7 +2341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let assigneeText = '';
                     if (assigneeSelect && assigneeSelect.value) {
                         const assigneeOption = assigneeSelect.options[assigneeSelect.selectedIndex];
-                        assigneeText = ` (Assigned to: ${assigneeOption.textContent.trim()})`;
+                        assigneeText = ''; // ` (Assigned to: ${assigneeOption.textContent.trim()})`;
                     }
                     
                     // Get notes if any

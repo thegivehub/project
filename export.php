@@ -70,13 +70,15 @@ function generateMarkdown($categories, $trancheName) {
                 // Get assignee name if exists
                 $assigneeText = '';
                 if (!empty($task['assignee_id'])) {
-                    $assigneeText = " (Assigned to: {$developers[$task['assignee_id']-1]->name})";
+                    //$assigneeText = " (Assigned to: {$developers[$task['assignee_id']-1]->name})";
                 }
                 
                 // Format notes if they exist
                 $notesText = '';
                 if (!empty($task['notes'])) {
                     $notesText = "\n   " . str_replace("\n", "\n   ", $task['notes']);
+                    $notesText = preg_replace("/&lt;/", "<", preg_replace("/&gt;/", ">", $task['notes']));
+                    $notesText = preg_replace("/&nbsp;/", " ", $notesText);
                 }
                 
                 $markdown .= "- [$checkbox] {$task['task_name']}$assigneeText$notesText\n";
@@ -163,7 +165,7 @@ if ($type === 'markdown') {
             <button class="copy-btn" onclick="copyContent()">Copy Markdown</button>
             <span class="copy-feedback" id="copyFeedback">Copied!</span>
         </div>
-        <?php echo htmlspecialchars($markdown); ?>
+<?php echo htmlspecialchars($markdown); ?>
         <script>
             function copyContent() {
                 const content = document.body.innerText.replace(/Copy Markdown\s+Copied!/, '').replace(/← Back to dashboard/, '');
@@ -261,9 +263,9 @@ if ($type === 'markdown') {
         <div class="toolbar no-print">
             <button class="print-btn" onclick="window.print()">Print</button>
         </div>
-        <div class="markdown-content">
-            <?php echo $Parsedown->text($markdown); ?>
-        </div>
+<div class="markdown-content">
+<?php echo $Parsedown->text($markdown); ?>
+</div>
     </body>
     </html>
     <?php
